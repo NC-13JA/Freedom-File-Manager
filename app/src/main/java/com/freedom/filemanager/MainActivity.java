@@ -57,20 +57,9 @@ public class MainActivity extends Activity {
         try {
             if (!Shizuku.pingBinder()) { message("Shizuku غير متصل. افتح تطبيق Shizuku وابدأ الخدمة أولاً."); return; }
             if (Shizuku.checkSelfPermission() == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                message("صلاحية Shizuku ممنوحة. UID الخدمة: " + runShizuku("id")); refreshStatus();
+                message("صلاحية Shizuku ممنوحة. UID الخدمة: " + Shizuku.getUid()); refreshStatus();
             } else Shizuku.requestPermission(SHIZUKU_REQUEST);
         } catch (Throwable e) { message("تعذر الاتصال بـ Shizuku: " + e.getMessage()); }
-    }
-
-    private String runShizuku(String command) {
-        try {
-            if (!Shizuku.pingBinder() || Shizuku.checkSelfPermission() != android.content.pm.PackageManager.PERMISSION_GRANTED) return "غير مصرح";
-            java.lang.Process p = Shizuku.newProcess(new String[]{"sh","-c",command}, null, null);
-            java.io.BufferedReader r = new java.io.BufferedReader(new java.io.InputStreamReader(p.getInputStream()));
-            StringBuilder b = new StringBuilder(); String line;
-            while ((line=r.readLine())!=null) b.append(line).append("\n");
-            p.waitFor(); return b.toString().trim();
-        } catch (Throwable e) { return "خطأ: " + e.getMessage(); }
     }
 
     private void refreshStatus() {
